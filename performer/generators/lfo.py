@@ -1,6 +1,6 @@
 import numpy as np
 
-from generators.generator import Generator
+from .generator import Generator
 
 class LFO(Generator):
 
@@ -17,6 +17,3 @@ class LFO(Generator):
 
     def _next(self, buffer_size, fs):
         return np.sin( 2*np.pi* np.arange(buffer_size) * self.f/fs )
-
-
-def test(): print("hello")

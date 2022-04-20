@@ -1,10 +1,23 @@
 import asyncio
 
-async def main():
-    print("will sleep")
-    await asyncio.sleep(100)
-    print("done sleep")
+async def firstWorker():
+    while True:
+        await asyncio.sleep(1)
+        print("First Worker Executed")
 
-asyncio.run(main())
+async def secondWorker():
+    while True:
+        await asyncio.sleep(3)
+        print("Second Worker Executed")
 
-print("this is async")
+loop = asyncio.get_event_loop()
+
+try:
+    asyncio.ensure_future(firstWorker())
+    asyncio.ensure_future(secondWorker())
+    loop.run_forever()
+except KeyboardInterrupt:
+    pass
+finally:
+    print("Closing Loop")
+    loop.close()
