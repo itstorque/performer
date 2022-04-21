@@ -1,4 +1,5 @@
 import asyncio
+from signal import signal
 from performer import *
 
 from threading import Thread
@@ -11,9 +12,11 @@ audio = AudioOut(fs=44100, buffer_bit_size=10, channels=1, volume=0.5, controlle
 
 F = [1000]
 
+F = Signal()
+
 controller.attach_value(F)
 
-lfo1 = LFO(audio, f=F, envelope=None)
+lfo1 = LFO(audio, f=F, envelope=None) + LFO(audio, f=F, envelope=None)
 
 # asyncio.run( audio.stream() )
 
