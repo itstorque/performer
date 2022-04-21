@@ -1,6 +1,6 @@
-from .envelope import Envelope
+# from .envelope import Envelope
 
-class ADSR(Envelope):
+# class ADSR(Envelope):
 
-    def __init__(self):
-        super().__init__()
+#     def __init__(self):
+#         super().__init__()

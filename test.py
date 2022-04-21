@@ -18,20 +18,24 @@ audio = AudioOut(fs=44100,
 
 F = np.array([1000.])
 
+A = np.array([0.])
+
 # F = Signal()
 
 controller.attach_value(F)
+controller.attach_value(A)
 
-lfo1 = LFO(None, f=F, envelope=None)
-lfo2 = LFO(None, f=F, fmul=0.4, envelope=None)# + LFO(audio, f=F, fmul=0.33, envelope=None)
+lfo1 = LFO(None, f=F, envelope=None, volume=A)
+lfo2 = LFO(None, f=F, fmul=0.66, envelope=None, volume=A) + LFO(None, f=F, fmul=0.33, envelope=None, volume=A)
 
 # lfo1.audio = None
 # lfo2.audio = None
 
-lfo = lfo1 + lfo2
-audio.attach_voice(lfo)
+out = lfo1#ADSR(lfo1 + lfo2, None)
 
-lfo.audio = audio
+audio.attach_voice(out)
+
+out.audio = audio
 
 # asyncio.run( audio.stream() )
 

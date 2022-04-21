@@ -8,7 +8,7 @@ from ..generators.sine import Sine
 class LFO(Oscillator):
     # TODO: maybe add windowing to remove clicks
 
-    def __init__(self, audio, f, fmul=1, envelope=None, controller=None, type="sin"):
+    def __init__(self, audio, f, fmul=1, envelope=None, controller=None, volume=1, type="sin"):
         #TODO: implement envelope classes
         
         super().__init__(audio, controller)
@@ -24,6 +24,8 @@ class LFO(Oscillator):
 
         self.f_op = Sine()
 
+        self.volume = volume
+
     def cycle(self):
         yield 
 
@@ -34,10 +36,10 @@ class LFO(Oscillator):
         # print(self.annimatable_param["f"] - self.prev_f)
 
         # phase matching
-        idxs += self.annimatable_param["f"] - self.prev_f
-        self.prev_f = self.annimatable_param["f"]
+        # idxs += self.annimatable_param["f"] - self.prev_f
+        self.prev_f += (self.prev_f-self.annimatable_param["f"])*0.0001
 
-        return self.f_op.generate(t = ( idxs * self.prev_f/fs )*self.fmul  )
+        return self.volume*self.f_op.generate(t = ( idxs * self.prev_f/fs )*self.fmul  )
 
     def change_param(self, param, value):
         self.annimatable_param[param] = value

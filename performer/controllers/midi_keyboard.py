@@ -1,5 +1,8 @@
 import pygame
 import sys
+import numpy as np
+import time
+
 from .controller import Controller
 
 class MIDIKeyboard(Controller):
@@ -31,14 +34,6 @@ class MIDIKeyboard(Controller):
         self.items = {}
         self.pointer = None
 
-    def attach(self, item, param, init_value=None):
-        if init_value==None: item.get_param(param)
-        self.items[item] = {param: init_value}
-
-    def attach_value(self, pointer):
-        self.pointer = pointer
-        print("ATTACHED", self.pointer)
-
     def init(self):
         # initialising pygame
         pygame.init()
@@ -59,7 +54,11 @@ class MIDIKeyboard(Controller):
                 key_freq = self.map_key_to_freq(event.key)
 
                 if key_freq:
-                    self.write(key_freq)
+                    self.write(0, key_freq)
+                    print("write 1")
+                    for i in np.arange(0,100,1):
+                        self.write(1, i/100)
+                        time.sleep(0.00001)
 
                 # if event.key == pygame.K_a:
                 #     print("170")
@@ -68,3 +67,12 @@ class MIDIKeyboard(Controller):
                 # if event.key == pygame.K_s:
                 #     print("240")
                 #     self.write(800)
+
+            if event.type == pygame.KEYUP:
+                key_freq = self.map_key_to_freq(event.key)
+
+                if key_freq:
+                    print("write 0")
+                    for i in np.arange(100,0,-1):
+                        self.write(1, i/100)
+                        time.sleep(0.00001)
