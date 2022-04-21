@@ -3,9 +3,17 @@ from performer import *
 
 from threading import Thread
 
-audio = AudioOut(fs=44100, buffer_bit_size=10, channels=1, volume=0.1)
+from performer.controllers.controller import Controller
 
-lfo1 = LFO(audio, f=1000, envelope=None)
+controller = Controller()
+
+audio = AudioOut(fs=44100, buffer_bit_size=10, channels=1, volume=0.5, controller=controller)
+
+F = [1000]
+
+controller.attach_value(F)
+
+lfo1 = LFO(audio, f=F, envelope=None)
 
 # asyncio.run( audio.stream() )
 
@@ -13,6 +21,8 @@ lfo1 = LFO(audio, f=1000, envelope=None)
 # loop.run_forever()
 
 print("RUNNING")
+
+audio.stream()
 
 # audio.destroy()
 
@@ -30,4 +40,4 @@ print("RUNNING")
 # t.start()
 
 
-asyncio.run(  audio.testing() )
+# asyncio.run(  audio.testing() )

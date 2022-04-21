@@ -54,9 +54,11 @@ idx = 0
 F = 100
 
 def callback(indata, outdata, frames, time, status):
+    global idx
     if status:
         print(status)
-    outdata[:,0] = np.sin(np.linspace(0, 512, 512) / F) #indata
+    outdata[:,0] = np.sin(np.linspace(idx, idx+512, 512) / F) #indata
+    idx += 512
 
 
 try:
