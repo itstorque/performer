@@ -1,8 +1,10 @@
 # audio
 from .audio.audio_out import AudioOut
 
-# generators
-from .generators.generator import Generator
-from .generators.lfo import LFO
+# oscillators
+from .oscillators.oscillator import Oscillator
+from .oscillators.lfo import LFO
 
 # envelopes
+
+# midi

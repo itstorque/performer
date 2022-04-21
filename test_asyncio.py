@@ -2,13 +2,16 @@ import asyncio
 
 async def firstWorker():
     while True:
-        await asyncio.sleep(1)
+        await asyncio.sleep(0.5)
         print("First Worker Executed")
 
 async def secondWorker():
-    while True:
-        await asyncio.sleep(3)
+    x=1
+    while x<=2:
+        x+=1
+        await asyncio.sleep(1.5)
         print("Second Worker Executed")
+    print(x)
 
 loop = asyncio.get_event_loop()
 

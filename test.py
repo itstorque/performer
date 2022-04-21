@@ -1,12 +1,12 @@
-# from audio.audio_out import *
-# from generators.lfo import *
-
+import asyncio
 from performer import *
 
-audio = AudioOut(fs=44100, buffer_size=1024, channels=1, volume=1)
+audio = AudioOut(fs=44100, buffer_bit_size=10, channels=1, volume=0.1)
 
-lfo1 = LFO(audio, f=20, envelope=None)
+lfo1 = LFO(audio, f=1000, envelope=None)
 
-audio.stream()
+asyncio.run( audio.stream() )
 
-audio.destroy()
+print("RUNNING")
+
+# audio.destroy()
