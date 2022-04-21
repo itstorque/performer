@@ -12,3 +12,7 @@ class Signal:
 
     def get(self):
         return self.value
+
+    def amimate(self):
+        #TODO: implement animated params
+        pass

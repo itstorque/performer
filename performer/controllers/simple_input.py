@@ -1,10 +1,9 @@
-import time
+from .controller import Controller
 
-class Controller:
+class SimpleInput(Controller):
 
     def __init__(self):
-        self.items = {}
-        self.pointer = None
+        super().__init__()
 
     def attach(self, item, param, init_value=None):
         if init_value==None: item.get_param(param)
@@ -18,8 +17,7 @@ class Controller:
         pass
         # self.
 
-    def write(self, value):
-        self.pointer[0] = value
-
     def update(self):
-        time.sleep(0.001)
+        # TODO: separate this into another controller... this is null controller
+        K = float(input("Controller: change freq?"))
+        self.write(K)

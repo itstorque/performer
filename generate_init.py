@@ -22,14 +22,6 @@ def traverse_path(path, depth=0):
     for file in find_files(path):
         FILES["."].add(file[len(dev_path):])
 
-    # for DIR in FILES.keys():
-    #     keys = FILES.keys()
-    #     if keys == ["."]:
-    #         FILES[DIR] = FILES[keys[0]]
-
-    # print(FILES.items())
-    # FILES = {i: j['.'] if type(j)==dict and "." in j.keys() else j for i, j in FILES.items()}
-
     return FILES
 
 def generate_init(files):

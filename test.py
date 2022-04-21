@@ -6,13 +6,13 @@ from threading import Thread
 
 from performer.controllers.controller import Controller
 
-controller = Controller()
+controller = MIDIKeyboard()
 
-audio = AudioOut(fs=44100, buffer_bit_size=10, channels=1, volume=0.5, controller=controller)
+audio = AudioOut(fs=44100, buffer_bit_size=10, channels=1, volume=0.5, controller=controller, output_device=1)
 
-F = [1000]
+F = np.array([1000.])
 
-F = Signal()
+# F = Signal()
 
 controller.attach_value(F)
 
@@ -44,3 +44,8 @@ audio.stream()
 
 
 # asyncio.run(  audio.testing() )
+
+
+# C4 is 60
+# A is C, thru L is D
+# wetyuo sharps
