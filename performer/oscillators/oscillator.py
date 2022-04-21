@@ -12,9 +12,15 @@ class Oscillator:
 
         self.current_index = 0
 
+        self.child_osc = child_osc
+
+        self.idx_identity = None
+
     def next(self, buffer_size=None):
 
         self.current_index += 1
+
+        if self.idx_identity: self.current_index = self.current_index % self.idx_identity
 
         if buffer_size==None: buffer_size = self.audio.buffer_size()
 
@@ -26,4 +32,4 @@ class Oscillator:
         return Oscillator(audio=None, controller=None, child_osc=[self, osc2])
 
     def _next(self, buffer_size, fs, sample_index):
-        return sum({i._next(buffer_size, fs, sample_index) for i in self.child_osc})
+        return sum([i._next(buffer_size, fs, sample_index) for i in self.child_osc])

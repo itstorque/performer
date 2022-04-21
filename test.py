@@ -8,7 +8,13 @@ from performer.controllers.controller import Controller
 
 controller = MIDIKeyboard()
 
-audio = AudioOut(fs=44100, buffer_bit_size=10, channels=1, volume=0.5, controller=controller, output_device=1)
+audio = AudioOut(fs=44100, 
+                    buffer_bit_size=11, 
+                    channels=1, 
+                    volume=0.1, 
+                    controller=controller, 
+                    output_device=1,
+                    latency='low')
 
 F = np.array([1000.])
 
@@ -16,7 +22,16 @@ F = np.array([1000.])
 
 controller.attach_value(F)
 
-lfo1 = LFO(audio, f=F, envelope=None) + LFO(audio, f=F, envelope=None)
+lfo1 = LFO(None, f=F, envelope=None)
+lfo2 = LFO(None, f=F, fmul=0.4, envelope=None)# + LFO(audio, f=F, fmul=0.33, envelope=None)
+
+# lfo1.audio = None
+# lfo2.audio = None
+
+lfo = lfo1 + lfo2
+audio.attach_voice(lfo)
+
+lfo.audio = audio
 
 # asyncio.run( audio.stream() )
 

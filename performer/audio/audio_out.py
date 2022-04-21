@@ -12,7 +12,7 @@ from ..controllers.controller import Controller
 
 class AudioOut:
 
-    def __init__(self, fs, buffer_bit_size, channels=1, controller=None, width=2, volume=0.1, output_device=0) -> None:
+    def __init__(self, fs, buffer_bit_size, channels=1, controller=None, width=2, volume=0.1, output_device=0, latency=None) -> None:
         # TODO: look at device param
         # TODO: buffer_bit_size, width, volume
 
@@ -21,6 +21,7 @@ class AudioOut:
         self.buffer_size = 2**buffer_bit_size
         self.channels = channels
         self.output_device = output_device
+        self.latency = latency
 
         if controller==None: controller = Controller()
 
@@ -70,7 +71,7 @@ class AudioOut:
 
     def stream(self):
         
-        with sd.OutputStream(device=self.output_device, channels=self.channels, callback=self._stream, samplerate=self.fs, blocksize=self.buffer_size, finished_callback=self.event.set) as audio_stream:
+        with sd.OutputStream(device=self.output_device, channels=self.channels, callback=self._stream, samplerate=self.fs, blocksize=self.buffer_size, finished_callback=self.event.set, latency=self.latency) as audio_stream:
             self.audio_stream = audio_stream
 
             while True: 

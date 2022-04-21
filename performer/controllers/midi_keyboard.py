@@ -14,10 +14,13 @@ class MIDIKeyboard(Controller):
     MIDIKEYMAP = [pygame.K_a, pygame.K_w, pygame.K_s, pygame.K_e, pygame.K_d, pygame.K_f, pygame.K_t, pygame.K_g, pygame.K_y, pygame.K_h, pygame.K_u, pygame.K_j, pygame.K_k, pygame.K_o, pygame.K_l]
 
     def map_key_to_midi(self, keypress):
-        return MIDIKEYMAP.index(keypress) + (current_octave-4) * OCTAVE_SIZE + MIDDLE_C
+        try:
+            return self.MIDIKEYMAP.index(keypress) + (self.current_octave-4) * self.OCTAVE_SIZE + self.MIDDLE_C
+        except:
+            pass
 
     def map_midi_to_freq(self, midi):
-        return 2**((midi-69)/12) * 440
+        return 2**((midi-69)/12) * 440 if midi!=None else None
 
     def map_key_to_freq(self, keypress):
         return self.map_midi_to_freq(self.map_key_to_midi(keypress))
@@ -53,10 +56,15 @@ class MIDIKeyboard(Controller):
 
             if event.type == pygame.KEYDOWN:
 
-                if event.key == pygame.K_a:
-                    print("170")
-                    self.write(450)
+                key_freq = self.map_key_to_freq(event.key)
 
-                if event.key == pygame.K_s:
-                    print("240")
-                    self.write(800)
+                if key_freq:
+                    self.write(key_freq)
+
+                # if event.key == pygame.K_a:
+                #     print("170")
+                #     self.write(450)
+
+                # if event.key == pygame.K_s:
+                #     print("240")
+                #     self.write(800)
