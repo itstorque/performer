@@ -3,7 +3,7 @@ import numpy as np
 import asyncio
 import threading
 
-import pyaudio
+# import pyaudio
 import sounddevice as sd
 
 class AudioOut:
@@ -21,8 +21,10 @@ class AudioOut:
         self.event = threading.Event()
 
         self.voices = set()
+
+        self.halt = False
         
-        self.audio_stream = sd.OutputStream(device=0, channels=channels, callback=self._stream, samplerate=fs, blocksize=self.buffer_size)
+        self.audio_stream = sd.OutputStream(device=0, channels=channels, callback=self._stream, samplerate=fs, blocksize=self.buffer_size, finished_callback=self.event.set)
 
     def sample_count(self):
         return self.fs * self.buffer_size
@@ -31,8 +33,19 @@ class AudioOut:
         # voices are Generator objects or TODO: other forms of inputs such as mic
         self.voices.add(voice)
 
+    def stop_audio_stream(self):
+        self.audio_stream.abort()
+        # self.audio_stream.stop()
+        self.audio_stream.close()
+
+        self.event.set()
+
     def _stream(self, outdata, frames, time, status):
         # TODO: status and time
+
+        if self.halt: 
+            self.loop.call_soon_threadsafe(self.event.set)
+            self.stop_audio_stream()
 
         t = (self.start_idx + np.arange(frames)) / self.fs
         t = t.reshape(-1, 1)
@@ -43,10 +56,47 @@ class AudioOut:
 
         self.start_idx += frames
 
-    async def stream(self):
+    async def stream(self, queue):
+
+        print('stream', queue)
         
         with self.audio_stream:
             await self.event.wait()
+
+        print("stream done")
+
+    def test_manager(self, loop, queue):
+
+        import time 
+        time.sleep(2)
+
+        print('manager', loop)
+
+        # loop.stop()
+        # loop.close()
+        self.halt = True
+
+        # loop.call_soon_threadsafe(queue.put_nowait, 'manager halted')
+        loop.call_soon_threadsafe(self.stop_audio_stream)
+
+        return
+
+    async def testing(self):
+
+        print('testing')
+        queue = asyncio.Queue()
+        loop = asyncio.get_running_loop()
+
+        self.loop = loop
+
+        blocking_fut = loop.run_in_executor(None, self.test_manager, loop, queue)
+        nonblocking_task = loop.create_task(self.stream(queue))
+
+        while not self.halt:
+            # Get messages from both blocking and non-blocking in parallel
+            message = await queue.get()
+            # You could send any messages, and do anything you want with them
+            print(message)
 
 class AudioOut_Asyncio:
     # TODO: add channels and stereo support
