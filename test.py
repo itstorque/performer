@@ -31,7 +31,7 @@ lfo2 = LFO(None, f=F, fmul=0.66, envelope=None, volume=A) + LFO(None, f=F, fmul=
 # lfo1.audio = None
 # lfo2.audio = None
 
-out = lfo1#ADSR(lfo1 + lfo2, None)
+out = ADSR(lfo1 + lfo2, None)
 
 audio.attach_voice(out)
 
