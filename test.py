@@ -6,7 +6,9 @@ from threading import Thread
 
 from performer.controllers.controller import Controller
 
-controller = MIDIKeyboard()
+controller = MIDIKeyboard(midiout=True)
+
+# print(sounddevice.query_devices())
 
 audio = AudioOut(fs=44100, 
                     buffer_bit_size=11, 
@@ -14,7 +16,7 @@ audio = AudioOut(fs=44100,
                     volume=0.1, 
                     controller=controller, 
                     output_device=1,
-                    latency='low')
+                    latency=0.01) # sounddevice.query_devices
 
 F = np.array([1000.])
 

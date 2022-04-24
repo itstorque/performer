@@ -34,27 +34,33 @@ class MIDINote:
         return (int('0' + b1, 2).to_bytes(1, byteorder='big'),
                 int('0' + b2, 2).to_bytes(1, byteorder='big'))
 
-    def play_note(self, note, velocity, channel=0):
-        return tuple(int.from_bytes(i, 'big') for i in (self.generate_status_byte(MIDINoteMsgTypes['NOTE_ON'], 0),
-                *self.generate_data_bytes(note, velocity)))
+    def play_note(self, note, velocity, channel=0, send=True):
+        midimsg = tuple(int.from_bytes(i, 'big') for i in (self.generate_status_byte(MIDINoteMsgTypes['NOTE_ON'], 0),
+                        *self.generate_data_bytes(note, velocity)))
+        
+        if send: send_midi(midimsg)
 
-m = MIDINote()
+        return midimsg
 
-import time
-import random
+if __name__=="__main__":
 
-while True:
+    m = MIDINote()
 
-    time.sleep(0.1)
+    import time
+    import random
 
-    rand_note = random.randint(48, 96-12)
+    send_midi(m.play_note(0, 0))
 
-    print(rand_note)
+    while True:
 
-    for i in range(0, 12):
-        send_midi(m.play_note(rand_note+i, random.randint(0, 127)))
-        time.sleep(0.1)
+        time.sleep(1)
 
-    for i in range(0, 12):
-        send_midi(m.play_note(rand_note+i, 0))
-        time.sleep(0.1)
+        rand_note = random.randint(4, 8)*12 #random.randint(48, 96-12)
+
+        print(rand_note)
+
+        for i in [0,2,4,5,7,9,11,12]:
+            m.play_note(rand_note+i, 127) #random.randint(0, 127)
+            time.sleep(1/16)
+            m.play_note(rand_note+i, 0)
+            time.sleep(1/16)

@@ -2,10 +2,16 @@
 # __init__.py that imports all classes
 # generators
 
-from .generators.sine import *
 from .generators.generator import *
-from .generators.square import *
+from .generators.sine import *
 from .generators.abstract_generator import *
+from .generators.square import *
+
+
+# audio
+
+from .audio.audio_in import *
+from .audio.audio_out import *
 
 
 # viz
@@ -13,30 +19,25 @@ from .generators.abstract_generator import *
 from .viz.scope import *
 
 
-# oscillators
-
-from .oscillators.adsr import *
-from .oscillators.oscillator import *
-from .oscillators.lfo import *
-
-
-# audio
-
-from .audio.audio_out import *
-from .audio.audio_in import *
-
-
 # midi
 
+from .midi.midiout import *
+from .midi.midinote import *
 from .midi.midimap import *
+
+
+# params
+
+from .params.signal import *
 
 
 # controllers
 
-from .controllers.controller import *
 from .controllers.midi_keyboard import *
-from .controllers.gui_handler import *
+from .controllers.midi_keyboard_pygame import *
+from .controllers.controller import *
 from .controllers.simple_input import *
+from .controllers.gui_handler import *
 
 
 # signals
@@ -44,9 +45,11 @@ from .controllers.simple_input import *
 from .signals.add import *
 
 
-# params
+# oscillators
 
-from .params.signal import *
+from .oscillators.lfo import *
+from .oscillators.oscillator import *
+from .oscillators.adsr import *
 
 
 # envelopes
