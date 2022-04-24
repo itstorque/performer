@@ -1,7 +1,10 @@
 import asyncio
+from socket import timeout
 from threading import Thread
 
-class GUIHandler:
+from .controller import Controller
+
+class GUIHandler(Controller):
 
     def __init__(self):
         import PySimpleGUI as sg
@@ -21,17 +24,39 @@ class GUIHandler:
 
     def init_window_loop(self):
         if self.window_loop_running == True: return
-        self.window_loop = asyncio.new_event_loop()
-        self.window_thread = Thread(target=self.gui_asyncloop, args=(self.window_loop,))
-        self.window_loop_running = True
+        # self.window_loop = asyncio.new_event_loop()
+        # self.window_thread = Thread(target=self.gui_asyncloop, args=(self.window_loop,))
+        # self.window_loop_running = True
 
-        self.window_thread.start()
+        # self.window_thread.start()
+
+        self.gui_asyncloop(None)
 
     def new_window(self, title, layout):
         import PySimpleGUI as sg
 
-        self.windows[title] = sg.Window(title, layout)
-        self.init_window_loop()
+        self.windows[title] = sg.Window(title, layout, no_titlebar=True, auto_size_buttons=False, keep_on_top=True, grab_anywhere=True)
+        self.windows[title].read(timeout=10)
+
+        # TODO: put this in a better place
+        self.window_loop_running = True
+        # self.init_window_loop()
+
+    def update(self):
+        import time
+        import PySimpleGUI as sg
+        # print("UPDATING", [window for name, window in self.windows.items()])
+        if self.window_loop_running == False: return
+
+        for name, window in self.windows.items():
+            if window != None:
+                event, values = window.Read(timeout=10)
+                if event == sg.WIN_CLOSED or event == 'Cancel': # if user closes window or clicks cancel
+                    self.windows[name] = None
+                    window.close()
+                    break
+                if event != sg.TIMEOUT_EVENT:
+                    print('You entered ', values[0])
 
     def gui_asyncloop(self, loop):
         # Set loop as the active event loop for this thread
@@ -42,7 +67,11 @@ class GUIHandler:
 
         while True:
             for name, window in self.windows.items():
-                event, values = window.read()
-                if event == sg.WIN_CLOSED or event == 'Cancel': # if user closes window or clicks cancel
-                    break
-                print('You entered ', values[0])
+                print(name)
+                if window != None:
+                    event, values = window.read()
+                    if event == sg.WIN_CLOSED or event == 'Cancel': # if user closes window or clicks cancel
+                        self.windows[name] = None
+                        window.close()
+                        break
+                    print('You entered ', values[0])

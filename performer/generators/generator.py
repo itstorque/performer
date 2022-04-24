@@ -16,17 +16,17 @@ class Generator:
         self.gui_handler = gui_handler
         gui_handler.init()
 
-    def viz(self):
+    def viz(self, name):
         if self.gui_handler == None:
             raise NotConnected("No gui_handler defined")
 
         import PySimpleGUI as sg
 
-        layout = [  [sg.Text('Some text on Row 1')],
-            [sg.Text('Enter something on Row 2'), sg.InputText()],
-            [sg.Button('Ok'), sg.Button('Cancel')] ]
+        layout = [  [sg.Text('GENERATOR ' + name)],
+            [sg.Slider(orientation ='horizontal', key='slider1')],
+            [sg.Button('Reset')] ]
 
-        self.gui_handler.new_window("TEST", layout)
+        self.gui_handler.new_window(name, layout)
 
         
 
