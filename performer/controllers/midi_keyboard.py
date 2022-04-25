@@ -62,30 +62,43 @@ class MIDIKeyboard(Controller):
         if midiout: self.midiout = MIDINote()
         else: self.midiout = None
 
+        self.envelopes = set()
+
     def init(self):
         # initialising pynput keyboard thread
         t1 = threading.Thread(target=self.async_keylistener, name = 'pynput_keyboard_thread')
         t1.start()
 
+    def attach_envelope(self, envelope):
+        self.envelopes.add(envelope)
+
     def send(self, note_down, note):
-        print(note, self.map_midi_to_freq(note))
         self.write(0, self.map_midi_to_freq(note))
-        for i in np.arange(0, 100, 1) if note_down else np.arange(100, 0, -1):
-            self.write(1, i/100)
-            time.sleep(0.00001)
+        # for i in np.arange(0, 100, 1) if note_down else np.arange(100, -1, -1):
+        #     self.write(1, i/100)
+        #     time.sleep(0.00001)
         if self.midiout: self.midiout.play_note(note, 127 if note_down else 0)
 
     def keydown(self, key):
-        if '.' in str(key): sys.exit()
+        if 'esc' in str(key): return sys.exit()
+        if '.' in str(key): return
         
         if key in self.keys_down: return
         self.keys_down.add(key)
+        
+        for envelope in self.envelopes:
+            envelope.toggle(on=True)
 
         return self.send(1, self.map_key_to_midi(key))
 
     def keyup(self, key):
+        if '.' in str(key): return
+
         self.keys_down.remove(key)
-        return self.send(0, self.map_key_to_midi(key))
+        self.send(0, self.map_key_to_midi(key))
+        
+        for envelope in self.envelopes:
+            envelope.toggle(on=False)
 
     def async_keylistener(self):
         with keyboard.Listener(on_press=self.keydown,

@@ -6,26 +6,26 @@ from threading import Thread
 
 from performer.controllers.controller import Controller
 
-controller = MIDIKeyboard(midiout=True)
+controller = MIDIKeyboard(midiout=False)
 
 # print(sounddevice.query_devices())
 
 audio = AudioOut(fs=44100, 
-                    buffer_bit_size=11, 
+                    buffer_bit_size=6, 
                     channels=1, 
                     volume=0.1, 
                     controller=controller, 
-                    output_device=1,
+                    output_device=0,
                     latency=0.01) # sounddevice.query_devices
 
-F = np.array([1000.])
+F = np.array([300.])
 
-A = np.array([0.])
+A = np.array([1.])
 
 # F = Signal()
 
 controller.attach_value(F)
-controller.attach_value(A)
+# controller.attach_value(A)
 
 lfo1 = LFO(None, f=F, envelope=None, volume=A)
 lfo2 = LFO(None, f=F, fmul=0.66, envelope=None, volume=A) + LFO(None, f=F, fmul=0.33, envelope=None, volume=A)
@@ -34,6 +34,8 @@ lfo2 = LFO(None, f=F, fmul=0.66, envelope=None, volume=A) + LFO(None, f=F, fmul=
 # lfo2.audio = None
 
 out = ADSR(lfo1 + lfo2, None)
+
+controller.attach_envelope(out)
 
 audio.attach_voice(out)
 

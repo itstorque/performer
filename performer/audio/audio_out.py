@@ -16,6 +16,8 @@ class AudioOut:
         # TODO: look at device param
         # TODO: buffer_bit_size, width, volume
 
+        print(sd.query_devices())
+
         self.fs = fs
         self.volume = volume
         self.buffer_size = 2**buffer_bit_size
