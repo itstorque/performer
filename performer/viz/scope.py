@@ -1,64 +1,65 @@
-# from matplotlib.animation import FuncAnimation
-# import matplotlib.pyplot as plt
+import sounddevice as sd
+from matplotlib.animation import FuncAnimation
+import matplotlib.pyplot as plt
 
-# import numpy as np
-# import queue
+import numpy as np
+import queue
 
-# class Scope:
+class Scope:
 
-#     def __init__(self):
+    def __init__(self):
 
-#         length = int(args.window * args.samplerate / (1000 * args.downsample))
-#         plotdata = np.zeros((length, len(args.channels)))
+        self.window_size = 200
+        self.fs = 44100
+        self.downsample = 20
 
-#         self.fig, ax = plt.subplots()
-#         lines = ax.plot(plotdata)
-#         if len(args.channels) > 1:
-#             ax.legend(['channel {}'.format(c) for c in args.channels],
-#                     loc='lower left', ncol=len(args.channels))
-#         ax.axis((0, len(plotdata), -1, 1))
-#         ax.set_yticks([0])
-#         ax.yaxis.grid(True)
-#         ax.tick_params(bottom=False, top=False, labelbottom=False,
-#                     right=False, left=False, labelleft=False)
-#         self.fig.tight_layout(pad=0)
+        length = int(self.window_size * self.fs / (1000 * self.downsample))
+        self.plotdata = np.zeros((length, 1))
 
-#         self.q = queue.Queue()
+        self.fig, ax = plt.subplots()
+        self.lines = ax.plot(self.plotdata)
+        ax.axis((0, len(self.plotdata), -1, 1))
+        ax.set_yticks([0])
+        ax.yaxis.grid(True)
+        ax.tick_params(bottom=False, top=False, labelbottom=False,
+                    right=False, left=False, labelleft=False)
+        self.fig.tight_layout(pad=0)
 
-#     def start(self, stream):
-#         ani = FuncAnimation(self.fig, self.update_plot, interval=30, blit=True)
-#         with stream:
-#             plt.show()
+        self.q = queue.Queue()
 
-#     def update_plot(frame):
-#         """
-#         This is called by matplotlib for each plot update.
+    def start(self, stream):
+        ani = FuncAnimation(self.fig, self.update_plot, interval=30, blit=True)
+        with stream:
+            plt.show()
 
-#         Typically, audio callbacks happen more frequently than plot updates,
-#         therefore the queue tends to contain multiple blocks of audio data.
-#         """
-#         while True:
-#             try:
-#                 data = q.get_nowait()
-#             except queue.Empty:
-#                 break
-#             shift = len(data)
-#             self.plotdata = np.roll(self.plotdata, -shift, axis=0)
-#             self.plotdata[-shift:, :] = data
-#         for column, line in enumerate(lines):
-#             line.set_ydata(self.plotdata[:, column])
-#         return lines
+    def update_plot(self, frame):
+        """
+        This is called by matplotlib for each plot update.
 
-# def audio_callback(indata, frames, time, status):
-#     """This is called (from a separate thread) for each audio block."""
-#     if status:
-#         print(status, file=sys.stderr)
-#     # Fancy indexing with mapping creates a (necessary!) copy:
-#     q.put(indata[::args.downsample, mapping])
+        Typically, audio callbacks happen more frequently than plot updates,
+        therefore the queue tends to contain multiple blocks of audio data.
+        """
+        while True:
+            try:
+                data = self.q.get_nowait()
+            except queue.Empty:
+                break
+            shift = len(data)
+            self.plotdata = np.roll(self.plotdata, -shift, axis=0)
+            self.plotdata[-shift:, :] = data
+        for column, line in enumerate(self.lines):
+            line.set_ydata(self.plotdata[:, column])
+        return self.lines
+
+    def update(self, indata, *args, **kwargs):
+        """This is called (from a separate thread) for each audio block."""
+        # TODO: rn this takes in args and kwargs and discards them...
+
+        self.q.put(indata[::self.downsample, (0, )])
 
 # scope = Scope()
 # scope.start(sd.InputStream(
-#         device=args.device, channels=max(args.channels),
-#         samplerate=args.samplerate, callback=audio_callback))
+#         device=1, channels=1,
+#         samplerate=44100, callback=scope.update))
 
-# # TODO: AAAAA, need to place things on queue for audio so that we can extract that for scope?
+# TODO: AAAAA, need to place things on queue for audio so that we can extract that for scope?

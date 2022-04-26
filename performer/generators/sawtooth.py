@@ -1,9 +1,9 @@
 import numpy as np
-from scipy.signal import square
+from scipy.signal import sawtooth
 
 from .generator import Generator
 
-class Square(Generator):
+class Sawtooth(Generator):
     # TODO: duty cycle, frequency
     # TODO: implement this
 
@@ -11,8 +11,7 @@ class Square(Generator):
         super().__init__(f_op=None)
 
     def generate(self, t):
-        return square(2 * np.pi * 5 * t)
+        return sawtooth(2 * np.pi * 5 * t)
 
 
-Sq = Square
-Rect = Square
+Saw = Sawtooth

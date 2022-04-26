@@ -3,7 +3,8 @@ import numpy as np
 
 from .oscillator import Oscillator
 
-from ..generators.sine import Sine
+from ..generators.sine import *
+from ..generators.square import *
 
 class LFO(Oscillator):
     # TODO: maybe add windowing to remove clicks
@@ -22,9 +23,9 @@ class LFO(Oscillator):
 
         self.idx_identity = f
 
-        self.f_op = Sine()
-
-        self.volume = volume
+        if type=="sin": self.f_op = Sine()
+        elif type=="sin": self.f_op = Square()
+        else: self.f_op = type()
 
     def cycle(self):
         yield 
@@ -39,7 +40,7 @@ class LFO(Oscillator):
         # idxs += self.annimatable_param["f"] - self.prev_f
         self.prev_f += (self.prev_f-self.annimatable_param["f"])*0.0001
 
-        return self.volume*self.f_op.generate(t = ( idxs * self.prev_f/fs )*self.fmul  )
+        return self._apply_consts( self.f_op.generate(t = ( idxs * self.prev_f/fs )*self.fmul  ) )
 
     def change_param(self, param, value):
         self.annimatable_param[param] = value

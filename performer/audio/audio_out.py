@@ -12,7 +12,14 @@ from ..controllers.controller import Controller
 
 class AudioOut:
 
-    def __init__(self, fs, buffer_bit_size, channels=1, controller=None, width=2, volume=0.1, output_device=0, latency=None) -> None:
+    def __init__(self, fs, buffer_bit_size, 
+                 channels=1, 
+                 controller=None, 
+                 width=2, 
+                 volume=0.1, 
+                 output_device=0, 
+                 latency=None, 
+                 scope=None):
         # TODO: look at device param
         # TODO: buffer_bit_size, width, volume
 
@@ -37,6 +44,8 @@ class AudioOut:
         self.voices = set()
 
         self.halted = False
+
+        self.scope = scope
 
     def sample_count(self):
         return self.fs * self.buffer_size
@@ -71,10 +80,14 @@ class AudioOut:
 
         self.start_idx += frames
 
+        if self.scope: self.scope.update(outdata)
+
     def stream(self):
         
         with sd.OutputStream(device=self.output_device, channels=self.channels, callback=self._stream, samplerate=self.fs, blocksize=self.buffer_size, finished_callback=self.event.set, latency=self.latency) as audio_stream:
             self.audio_stream = audio_stream
+
+            if self.scope: self.scope.start(audio_stream)
 
             while True: 
                 if self.halted: break
