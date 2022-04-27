@@ -39,7 +39,8 @@ def generate_init(files):
 
             for j in files[loop][i]:
                 has_files = True
-                code += "from " + j.replace(".py", "").replace("/", ".") + " import *\n"
+                if "_deprecated.py" not in j:
+                    code += "from " + j.replace(".py", "").replace("/", ".") + " import *\n"
 
             if has_files: code += "\n\n"
             else: code += "#TODO: MODULE EMPTY!\n\n\n"

@@ -36,7 +36,6 @@ class MIDIKeyboard(Controller):
     MIDDLE_C = 60
     OCTAVE_SIZE = 12
 
-    # MIDIKEYMAP = [pygame.K_a, pygame.K_w, pygame.K_s, pygame.K_e, pygame.K_d, pygame.K_f, pygame.K_t, pygame.K_g, pygame.K_y, pygame.K_h, pygame.K_u, pygame.K_j, pygame.K_k, pygame.K_o, pygame.K_l]
     MIDIKEYMAP = list("awsedftgyhujkol")
 
     keys_down = set()
@@ -111,30 +110,3 @@ class MIDIKeyboard(Controller):
         import time
         time.sleep(0.0001)
         return
-        # for event in pygame.event.get():
-        #     if event.type == pygame.QUIT:
-        #         pygame.quit()
-        #         sys.exit()
-
-        #     if event.type == pygame.KEYDOWN:
-
-        #         midinote = self.map_key_to_midi(event.key)
-
-        #         if midinote:
-        #             print("write 1")
-        #             self.send(1, midinote)
-
-        #         # if event.key == pygame.K_a:
-        #         #     print("170")
-        #         #     self.write(450)
-
-        #         # if event.key == pygame.K_s:
-        #         #     print("240")
-        #         #     self.write(800)
-
-        #     if event.type == pygame.KEYUP:
-        #         midinote = self.map_key_to_midi(event.key)
-
-        #         if midinote:
-        #             print("write 0")
-        #             self.send(0, midinote)

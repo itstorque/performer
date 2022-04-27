@@ -15,9 +15,9 @@ audio = AudioOut(fs=44100,
                     channels=1, 
                     volume=1, 
                     controller=controller, 
-                    output_device=0,
+                    output_device=1,
                     latency=0.01,
-                    scope=Scope()) # sounddevice.query_devices
+                    scope=AudioOutFile()) # sounddevice.query_devices
 
 F = np.array([300.])
 

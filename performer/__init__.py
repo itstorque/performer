@@ -7,31 +7,6 @@ from .oscillators.lfo import *
 from .oscillators.oscillator import *
 
 
-# params
-
-from .params.signal import *
-
-
-# envelopes
-
-from .envelopes.adsr import *
-from .envelopes.envelope import *
-
-
-# generators
-
-from .generators.abstract_generator import *
-from .generators.square import *
-from .generators.generator import *
-from .generators.sine import *
-from .generators.sawtooth import *
-
-
-# signals
-
-from .signals.add import *
-
-
 # viz
 
 from .viz.scope import *
@@ -44,18 +19,43 @@ from .midi.midimap import *
 from .midi.midiout import *
 
 
+# params
+
+from .params.signal import *
+
+
 # controllers
 
-from .controllers.midi_keyboard import *
+from .controllers.controller import *
 from .controllers.gui_handler import *
 from .controllers.simple_input import *
-from .controllers.midi_keyboard_pygame import *
-from .controllers.controller import *
+from .controllers.midi_keyboard import *
+
+
+# envelopes
+
+from .envelopes.adsr import *
+from .envelopes.envelope import *
 
 
 # audio
 
-from .audio.audio_out import *
 from .audio.audio_in import *
+from .audio.audio_out import *
+from .audio.audio_out_file import *
+
+
+# signals
+
+from .signals.add import *
+
+
+# generators
+
+from .generators.sine import *
+from .generators.square import *
+from .generators.sawtooth import *
+from .generators.generator import *
+from .generators.abstract_generator import *
 
 
