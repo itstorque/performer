@@ -2,6 +2,9 @@ import threading
 from pynput import keyboard
 
 import sys
+from subprocess import call
+import os
+
 import numpy as np
 import time
 
@@ -32,6 +35,7 @@ class MIDIKeyboard(Controller):
     # TODO: midikey map
 
     current_octave = 4
+    current_vel = 127
 
     MIDDLE_C = 60
     OCTAVE_SIZE = 12
@@ -39,6 +43,22 @@ class MIDIKeyboard(Controller):
     MIDIKEYMAP = list("awsedftgyhujkol")
 
     keys_down = set()
+
+    def oct_down(self):
+        self.current_octave -= 1
+        print("OCTAVE:", self.current_octave, " "*20, "\n")
+
+    def oct_up(self):
+        self.current_octave += 1
+        print("OCTAVE:", self.current_octave, " "*20, "\n")
+
+    def vel_down(self):
+        self.current_vel -= 1
+
+    def vel_up(self):
+        self.current_vel += 1
+
+    MIDICONTROLMAP = {"z": oct_down, "x": oct_up, "c": vel_down, "v": vel_up }
 
     def map_key_to_midi(self, keypress):
         try:
@@ -63,6 +83,8 @@ class MIDIKeyboard(Controller):
 
         self.envelopes = set()
 
+        self.all_freqs = set()
+
     def init(self):
         # initialising pynput keyboard thread
         t1 = threading.Thread(target=self.async_keylistener, name = 'pynput_keyboard_thread')
@@ -72,23 +94,47 @@ class MIDIKeyboard(Controller):
         self.envelopes.add(envelope)
 
     def send(self, note_down, note):
-        self.write(0, self.map_midi_to_freq(note))
+        # self.write(0, self.map_midi_to_freq(note))
+        self.write('recent_freq', self.map_midi_to_freq(note))
+        self.write('all_freqs', self.all_freqs)
         # for i in np.arange(0, 100, 1) if note_down else np.arange(100, -1, -1):
         #     self.write(1, i/100)
         #     time.sleep(0.00001)
         if self.midiout: self.midiout.play_note(note, 127 if note_down else 0)
 
+    def note_down(self, midinote):
+
+        freq = self.map_midi_to_freq(midinote)
+        freq = self.map_midi_to_freq(midinote)
+
+        self.all_freqs.add()
+
+        return
+
     def keydown(self, key):
+        
+        if key == keyboard.Key.media_volume_up:
+            call(['osascript -e "set volume output volume (output volume of (get volume settings) + 10) --100%"'], shell=True)
+            print(os.system('osascript -e "get volume settings"'))
+        
+        if key == keyboard.Key.media_volume_down:
+            call(['osascript -e "set volume output volume (output volume of (get volume settings) - 10) --100%"'], shell=True)
+            print(os.system('osascript -e "get volume settings"'))
+
         if 'esc' in str(key): return sys.exit()
         if '.' in str(key): return
         
         if key in self.keys_down: return
         self.keys_down.add(key)
+
         
         for envelope in self.envelopes:
             envelope.toggle(on=True)
 
-        return self.send(1, self.map_key_to_midi(key))
+        if str(key)[1] in self.MIDICONTROLMAP:
+            self.MIDICONTROLMAP[str(key)[1]](self)
+
+        return self.note_down(self.map_key_to_midi(key))#self.send(1, self.map_key_to_midi(key))
 
     def keyup(self, key):
         if '.' in str(key): return

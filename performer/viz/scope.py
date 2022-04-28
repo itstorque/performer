@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import queue
 
+plt.rcParams['keymap.save'].remove('s')
+
 class Scope:
 
     def __init__(self, downsample=20):

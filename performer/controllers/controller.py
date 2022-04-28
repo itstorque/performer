@@ -4,7 +4,7 @@ class Controller:
 
     def __init__(self):
         self.items = {}
-        self.pointers = []
+        self.pointers = {}
 
     def attach(self, item, param, init_value=None):
         if init_value==None: item.get_param(param)

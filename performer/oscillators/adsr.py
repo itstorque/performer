@@ -64,7 +64,7 @@ class ADSR(Oscillator):
 
                 self.falling_amp = self.amp
 
-            # sleep(0.00001)
+            sleep(0.01)
 
     def _next(self, buffer_size, fs, sample_index):
         return self.amp*self.input._next(buffer_size, fs, sample_index)
