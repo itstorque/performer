@@ -76,7 +76,7 @@ class AudioOut:
 
         K = [voice.next( self.buffer_size ) for voice in self.voices]
 
-        outdata[:, 0] = self.volume * sum( K )#np.sin(2 * np.pi * 500 * t)
+        outdata[:, 0] = self.volume.__float__() * sum( K )#np.sin(2 * np.pi * 500 * t)
 
         self.start_idx += frames
 

@@ -6,12 +6,22 @@ class Controller:
         self.items = {}
         self.pointers = {}
 
+
+        self.freq_pointers = set()
+        self.toggle_pointers = set()
+
     def attach(self, item, param, init_value=None):
         if init_value==None: item.get_param(param)
         self.items[item] = {param: init_value}
 
     def attach_value(self, pointer):
         self.pointers.append(pointer)
+
+    def attach_freq(self, pointer):
+        self.freq_pointers.add(pointer)
+
+    def attach_toggle(self, pointer):
+        self.toggle_pointers.add(pointer)
 
     def init(self):
         pass

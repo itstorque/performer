@@ -93,21 +93,24 @@ class MIDIKeyboard(Controller):
     def attach_envelope(self, envelope):
         self.envelopes.add(envelope)
 
-    def send(self, note_down, note):
-        # self.write(0, self.map_midi_to_freq(note))
-        self.write('recent_freq', self.map_midi_to_freq(note))
-        self.write('all_freqs', self.all_freqs)
-        # for i in np.arange(0, 100, 1) if note_down else np.arange(100, -1, -1):
-        #     self.write(1, i/100)
-        #     time.sleep(0.00001)
-        if self.midiout: self.midiout.play_note(note, 127 if note_down else 0)
-
     def note_down(self, midinote):
 
         freq = self.map_midi_to_freq(midinote)
-        freq = self.map_midi_to_freq(midinote)
 
-        self.all_freqs.add()
+        if freq == None: return
+
+        for freqptr in self.freq_pointers:
+            freqptr.set(freq)
+
+            print(freqptr.__float__())
+
+        # self.all_freqs.add()
+
+        if self.midiout: self.midiout.play_note(midinote, self.current_vel)
+
+        return
+
+    def note_up(self, midinote):
 
         return
 
@@ -140,7 +143,8 @@ class MIDIKeyboard(Controller):
         if '.' in str(key): return
 
         self.keys_down.remove(key)
-        self.send(0, self.map_key_to_midi(key))
+        # self.send(0, self.map_key_to_midi(key))
+        self.note_up(self.map_key_to_midi(key))
         
         for envelope in self.envelopes:
             envelope.toggle(on=False)

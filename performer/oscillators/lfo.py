@@ -9,19 +9,19 @@ from ..generators.square import *
 class LFO(Oscillator):
     # TODO: maybe add windowing to remove clicks
 
-    def __init__(self, audio, f, fmul=1, envelope=None, controller=None, volume=1, polyphonous=False, type="sin"):
+    def __init__(self, audio=None, f=100, fmul=1, envelope=None, controller=None, volume=1, polyphonous=False, type="sin"):
         #TODO: implement envelope classes
         
-        super().__init__(audio, controller)
+        super().__init__(audio, controller, volume=volume)
 
-        self.annimatable_param["f"] = f
+        self.freq = f
         self.envelope = envelope
 
         self.fmul = fmul
         
-        self.prev_f = f[0]
+        self.prev_f = f.__float__()
 
-        self.idx_identity = f
+        self.idx_identity = f.__float__()
 
         self.old_shift = 0
 
@@ -37,7 +37,7 @@ class LFO(Oscillator):
     def _next(self, buffer_size, fs, sample_index, f_overwrite=None):
         idxs = np.arange(buffer_size, dtype=np.float32) + (sample_index-1)*buffer_size
 
-        if f_overwrite==None: f_overwrite = self.annimatable_param["f"]
+        if f_overwrite==None: f_overwrite = self.freq.__float__()
 
         # print(self.annimatable_param["f"], self.prev_f)
         # print(self.annimatable_param["f"] - self.prev_f)
@@ -55,11 +55,11 @@ class LFO(Oscillator):
         # else:
         #     eff_f = self.prev_f
 
-        if self.polyphonous: 
+        # if self.polyphonous: 
 
-            if self.prev_f != f_overwrite:
+        #     if self.prev_f != f_overwrite:
 
-                return self._next(self, buffer_size, fs, sample_index, self.prev_f) + self._apply_consts( self.f_op.generate(t = ( np.multiply(idxs, eff_f) + phase_match )/fs*self.fmul  ) )
+        #         return self._next(self, buffer_size, fs, sample_index, self.prev_f) + self._apply_consts( self.f_op.generate(t = ( np.multiply(idxs, eff_f) + phase_match )/fs*self.fmul  ) )
 
         self.prev_f = f_overwrite
 

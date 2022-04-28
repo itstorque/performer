@@ -16,7 +16,7 @@ class Oscillator:
 
         self.idx_identity = None
 
-        self.multiplier = volume
+        self.multiplier = 1
         self.offset = 0
 
     def next(self, buffer_size=None):
@@ -52,4 +52,4 @@ class Oscillator:
         return self.offset + self.multiplier * signal
 
     def _next(self, buffer_size, fs, sample_index):
-        return self._apply_consts( sum([i._next(buffer_size, fs, sample_index) for i in self.child_osc]) )
+        return self.volume.__float__() * self._apply_consts( sum([i._next(buffer_size, fs, sample_index) for i in self.child_osc]) )
