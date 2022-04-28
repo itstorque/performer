@@ -13,6 +13,8 @@ class ADSR(Oscillator):
         self.input = input
         self.amp = 0
 
+        self.rising_amp, self.falling_amp = self.amp, self.amp
+
         self.A = A
         self.D = D
         self.S = S
@@ -45,18 +47,22 @@ class ADSR(Oscillator):
             if self.on:
 
                 if T <= self.A: 
-                    self.amp = np.interp(T, [0, self.A], [0, self.Amax])
+                    self.amp = np.interp(T, [0, self.A], [self.falling_amp, self.Amax])
                 elif T <= self.D + self.A:
                     self.amp = np.interp(T, [self.A, self.A+self.D], [self.Amax, self.S])
                 else:
                     self.amp = self.S
+
+                self.rising_amp = self.amp
             
             else:
 
                 if T <= self.R:
-                    self.amp = np.interp(T, [0, self.R], [self.S, 0])
+                    self.amp = np.interp(T, [0, self.R], [self.rising_amp, 0])
                 else:
                     self.amp = 0
+
+                self.falling_amp = self.amp
 
             # sleep(0.00001)
 

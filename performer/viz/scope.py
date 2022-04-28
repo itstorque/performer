@@ -7,11 +7,11 @@ import queue
 
 class Scope:
 
-    def __init__(self):
+    def __init__(self, downsample=20):
 
         self.window_size = 200
         self.fs = 44100
-        self.downsample = 20
+        self.downsample = downsample
 
         length = int(self.window_size * self.fs / (1000 * self.downsample))
         self.plotdata = np.zeros((length, 1))
