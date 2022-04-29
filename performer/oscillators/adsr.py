@@ -42,8 +42,6 @@ class ADSR(Oscillator):
         while True:
             T = time() - self.timer
 
-            print(self.on, self.amp, T, " "*20, end="\r")
-
             if self.on:
 
                 if T <= self.A: 

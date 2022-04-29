@@ -21,7 +21,7 @@ class LFO(Oscillator):
         
         self.prev_f = f.__float__()
 
-        self.idx_identity = f.__float__()
+        self.idx_identity = f
 
         self.old_shift = 0
 
@@ -67,10 +67,10 @@ class LFO(Oscillator):
 
         self.old_shift = idxs[-1]
 
+        # print('f', f_overwrite)
+
+        # print('e', np.multiply(idxs, eff_f))
+
         # return self._apply_consts( self.f_op.generate(t = ( np.multiply(idxs, eff_f) + phase_match )/fs*self.fmul  ) )
+
         return self._apply_consts( self.f_op.generate(t = ( np.multiply(idxs, eff_f) + phase_match )*self.fmul, fs = fs  ) )
-
-    def change_param(self, param, value):
-        self.annimatable_param[param] = value
-
-        if param == "f": self.idx_identity = value

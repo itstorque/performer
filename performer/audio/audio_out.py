@@ -42,6 +42,7 @@ class AudioOut:
         self.event = threading.Event()
 
         self.voices = set()
+        self.osc_nonvoice = set()
 
         self.halted = False
 
@@ -49,6 +50,9 @@ class AudioOut:
 
     def sample_count(self):
         return self.fs * self.buffer_size
+
+    def add(self, osc):
+        self.osc_nonvoice.add(osc)
 
     def attach_voice(self, voice):
         # voices are Generator objects or TODO: other forms of inputs such as mic
@@ -73,6 +77,8 @@ class AudioOut:
 
         t = (self.start_idx + np.arange(frames)) / self.fs
         t = t.reshape(-1, 1)
+
+        for osc in self.osc_nonvoice: osc.next( self.buffer_size )
 
         K = [voice.next( self.buffer_size ) for voice in self.voices]
 

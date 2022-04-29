@@ -1,6 +1,9 @@
+from time import time
+import numpy as np
+
 class Oscillator:
 
-    def __init__(self, audio, controller=None, volume=1, child_osc=[]):
+    def __init__(self, audio=None, controller=None, volume=1, multiplier=1, offset=0, child_osc=[]):
 
         if audio:
             self.audio = audio
@@ -14,27 +17,39 @@ class Oscillator:
 
         self.child_osc = child_osc
 
-        self.idx_identity = None
+        self.volume = volume
 
-        self.multiplier = 1
-        self.offset = 0
+        self.multiplier = multiplier
+        self.offset = offset
+
+        self.last_sample = [0]
+
+    def __float__(self):
+        # print('s', self.last_sample)
+        return self.last_sample
 
     def next(self, buffer_size=None):
 
         self.current_index += 1
 
-        if self.idx_identity: self.current_index = self.current_index % self.idx_identity
+        self.current_index = self.current_index % (2 * self.audio.fs)
 
         if buffer_size==None: buffer_size = self.audio.buffer_size()
 
-        return self._next(buffer_size=buffer_size, fs=self.audio.fs, sample_index=self.current_index)
+        s = self._next(buffer_size=buffer_size, fs=self.audio.fs, sample_index=self.current_index)
+
+        self.last_sample = s
+
+        return s
 
     # note factors can be either ints or other osc objects
 
     def __add__(self, factor):
         # TODO: implement audio, controller merge for sum of separate sources/controllers
 
-        if type(factor) in {int, float}: self.offset += factor
+        if type(factor) in {int, float}: 
+            # self.offset += factor
+            return Oscillator(audio=None, controller=None, offset=self.offset+factor, multiplier=self.multiplier, child_osc=[self])
 
         return Oscillator(audio=None, controller=None, child_osc=[self, factor])
 
@@ -42,7 +57,11 @@ class Oscillator:
         return self.__add__(factor)
 
     def __mul__(self, factor):
-        if type(factor) in {int, float}: self.multiplier *= factor
+        if type(factor) in {int, float}: 
+            return Oscillator(audio=None, controller=None, offset=self.offset, multiplier=self.multiplier*factor, child_osc=[self])
+        
+        # handle amplitude modulation in this way...
+        raise NotImplementedError
         return self
 
     def __rmul__(self, factor):

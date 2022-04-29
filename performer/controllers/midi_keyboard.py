@@ -102,8 +102,6 @@ class MIDIKeyboard(Controller):
         for freqptr in self.freq_pointers:
             freqptr.set(freq)
 
-            print(freqptr.__float__())
-
         # self.all_freqs.add()
 
         if self.midiout: self.midiout.play_note(midinote, self.current_vel)
@@ -112,19 +110,24 @@ class MIDIKeyboard(Controller):
 
     def note_up(self, midinote):
 
+        if self.midiout: self.midiout.play_note(midinote, 0)
+
         return
 
     def keydown(self, key):
+        #TODO: better non-mac based volume controls... and no shell calling...
         
         if key == keyboard.Key.media_volume_up:
-            call(['osascript -e "set volume output volume (output volume of (get volume settings) + 10) --100%"'], shell=True)
+            call(['osascript -e "set volume output volume (output volume of (get volume settings) + 5) --100%"'], shell=True)
             print(os.system('osascript -e "get volume settings"'))
         
         if key == keyboard.Key.media_volume_down:
-            call(['osascript -e "set volume output volume (output volume of (get volume settings) - 10) --100%"'], shell=True)
+            call(['osascript -e "set volume output volume (output volume of (get volume settings) - 5) --100%"'], shell=True)
             print(os.system('osascript -e "get volume settings"'))
 
-        if 'esc' in str(key): return sys.exit()
+        if 'esc' in str(key): 
+            return call(['killall Python'], shell=True) 
+            # return sys.exit()
         if '.' in str(key): return
         
         if key in self.keys_down: return
