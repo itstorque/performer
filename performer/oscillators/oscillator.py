@@ -1,6 +1,8 @@
 from time import time
 import numpy as np
 
+from random import randint
+
 class Oscillator:
 
     def __init__(self, audio=None, controller=None, volume=1, multiplier=1, offset=0, child_osc=[]):
@@ -13,7 +15,7 @@ class Oscillator:
 
         self.annimatable_param = {}
 
-        self.current_index = 0
+        self.current_index = randint(0, 44100)
 
         self.child_osc = child_osc
 
@@ -22,7 +24,7 @@ class Oscillator:
         self.multiplier = multiplier
         self.offset = offset
 
-        self.last_sample = [0]
+        self.last_sample = np.array([0])
 
     def __float__(self):
         # print('s', self.last_sample)
@@ -36,7 +38,7 @@ class Oscillator:
 
         if buffer_size==None: buffer_size = self.audio.buffer_size()
 
-        s = self._next(buffer_size=buffer_size, fs=self.audio.fs, sample_index=self.current_index)
+        s = self.volume.__float__() * self._next(buffer_size=buffer_size, fs=self.audio.fs, sample_index=self.current_index)
 
         self.last_sample = s
 
@@ -71,4 +73,4 @@ class Oscillator:
         return self.offset + self.multiplier * signal
 
     def _next(self, buffer_size, fs, sample_index):
-        return self.volume.__float__() * self._apply_consts( sum([i._next(buffer_size, fs, sample_index) for i in self.child_osc]) )
+        return self._apply_consts( sum([i._next(buffer_size, fs, sample_index) for i in self.child_osc]) )

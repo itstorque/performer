@@ -21,6 +21,7 @@ class Scope:
         self.fig, ax = plt.subplots()
         self.lines = ax.plot(self.plotdata)
         ax.axis((0, len(self.plotdata), -1, 1))
+        # ax.axis((0, len(self.plotdata), -50000, 5000000))
         ax.set_yticks([0])
         ax.yaxis.grid(True)
         ax.tick_params(bottom=False, top=False, labelbottom=False,

@@ -7,9 +7,9 @@ from ..generators.sine import *
 from ..generators.square import *
 
 class LFO(Oscillator):
-    # TODO: maybe add windowing to remove clicks
+    # TODO: maybe add windowing to remove clicks -> no need anymore?
 
-    def __init__(self, audio=None, f=100, fmul=1, envelope=None, controller=None, volume=1, polyphonous=False, type="sin"):
+    def __init__(self, audio=None, f=100, fmul=1, envelope=None, controller=None, volume=1, polyphonous=False, type=Sine):
         #TODO: implement envelope classes
         
         super().__init__(audio, controller, volume=volume)
@@ -27,14 +27,13 @@ class LFO(Oscillator):
 
         self.polyphonous = polyphonous
 
-        if type=="sin": self.f_op = Sine()
-        elif type=="sin": self.f_op = Square()
-        else: self.f_op = type()
+        self.f_op = type()
 
-    def cycle(self):
-        yield 
+        self.last_idx_modulation = 0
 
     def _next(self, buffer_size, fs, sample_index, f_overwrite=None):
+        #TODO: use an if statement not a try :p
+
         idxs = np.arange(buffer_size, dtype=np.float32) + (sample_index-1)*buffer_size
 
         if f_overwrite==None: f_overwrite = self.freq.__float__()
@@ -67,10 +66,28 @@ class LFO(Oscillator):
 
         self.old_shift = idxs[-1]
 
+        # print(f_overwrite)
+
+        try: 
+            
+            eff_f[-1]
+            
+            idxs = np.cumsum(self.freq.next(buffer_size)) + self.last_idx_modulation
+            
+            self.last_idx_modulation = idxs[-1]
+
+            # print(np.multiply(idxs, eff_f)[-1])
+
+            # return np.multiply(idxs, eff_f)/fs
+
+        except: 
+            
+            idxs *= eff_f
+
         # print('f', f_overwrite)
 
         # print('e', np.multiply(idxs, eff_f))
 
         # return self._apply_consts( self.f_op.generate(t = ( np.multiply(idxs, eff_f) + phase_match )/fs*self.fmul  ) )
 
-        return self._apply_consts( self.f_op.generate(t = ( np.multiply(idxs, eff_f) + phase_match )*self.fmul, fs = fs  ) )
+        return self._apply_consts( self.f_op.generate(t = ( idxs + phase_match )*self.fmul, fs = fs  ) )

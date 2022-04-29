@@ -28,8 +28,20 @@ class ParamRef():
     def __radd__(self, v):
         return ParamRef(param=self.param, mul=self.mul, add=self.add+v)
 
+    # TODO: check if introducing eq and hash created bugs
+    def __eq__(self, __o: object) -> bool:
+        return __o in {self.__float__, self.__int__, self}
+
+    def __hash__(self):
+        return hash(self.val)
+
     def set(self, val):
         self.val = val
 
     def get(self):
         return self.val
+
+    def _next(self, *args, **kwargs): 
+        # throw inputs since _next means some object thinks
+        # a Param object is a generator object.
+        return self.__float__()

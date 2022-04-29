@@ -16,6 +16,9 @@ class Generator:
         self.gui_handler = gui_handler
         gui_handler.init()
 
+    def __call__(self):
+        return self
+
     def viz(self, name):
         if self.gui_handler == None:
             raise NotConnected("No gui_handler defined")

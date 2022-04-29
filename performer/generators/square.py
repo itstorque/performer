@@ -7,11 +7,13 @@ class Square(Generator):
     # TODO: duty cycle, frequency
     # TODO: implement this
 
-    def __init__(self):
+    def __init__(self, duty=0.5):
         super().__init__(f_op=None)
 
-    def generate(self, t):
-        return square(2 * np.pi * 5 * t)
+        self.duty = duty
+
+    def generate(self, t, fs):
+        return 2*square(2 * np.pi * t, duty=self.duty.__float__()) - 1
 
 
 Sq = Square

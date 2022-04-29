@@ -137,6 +137,9 @@ class MIDIKeyboard(Controller):
         for envelope in self.envelopes:
             envelope.toggle(on=True)
 
+        for toggle in self.toggle_pointers:
+            toggle.set(1)
+
         if str(key)[1] in self.MIDICONTROLMAP:
             self.MIDICONTROLMAP[str(key)[1]](self)
 
@@ -148,6 +151,9 @@ class MIDIKeyboard(Controller):
         self.keys_down.remove(key)
         # self.send(0, self.map_key_to_midi(key))
         self.note_up(self.map_key_to_midi(key))
+
+        for toggle in self.toggle_pointers:
+            toggle.set(0)
         
         for envelope in self.envelopes:
             envelope.toggle(on=False)

@@ -5,7 +5,7 @@ from .oscillator import Oscillator
 
 class ADSR(Oscillator):
 
-    def __init__(self, input, audio, A=0.5, D=0.5, S=0.4, R=0.5, controller=None):
+    def __init__(self, input, audio=None, A=0.5, D=0.5, S=0.4, R=0.5, controller=None):
         from time import time
 
         super().__init__(audio, controller)

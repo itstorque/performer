@@ -88,7 +88,7 @@ class AudioOut:
 
         if self.scope: self.scope.update(outdata)
 
-    def stream(self):
+    def stream(self, loop=None):
         
         with sd.OutputStream(device=self.output_device, channels=self.channels, callback=self._stream, samplerate=self.fs, blocksize=self.buffer_size, finished_callback=self.event.set, latency=self.latency) as audio_stream:
             self.audio_stream = audio_stream
@@ -97,5 +97,7 @@ class AudioOut:
 
             while True: 
                 if self.halted: break
+
+                if loop: loop(self)
 
                 self.controller.update()

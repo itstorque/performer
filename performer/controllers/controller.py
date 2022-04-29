@@ -9,6 +9,7 @@ class Controller:
 
         self.freq_pointers = set()
         self.toggle_pointers = set()
+        self.adsr_pointers = set()
 
     def attach(self, item, param, init_value=None):
         if init_value==None: item.get_param(param)
@@ -22,6 +23,12 @@ class Controller:
 
     def attach_toggle(self, pointer):
         self.toggle_pointers.add(pointer)
+
+    # def attach_adsr(self, pointer):
+    #     self.adsr_pointers.add(pointer)
+
+    # def run_adsr(self):
+    #     return
 
     def init(self):
         pass
