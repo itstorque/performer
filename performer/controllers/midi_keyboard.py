@@ -99,8 +99,7 @@ class MIDIKeyboard(Controller):
 
         if freq == None: return
 
-        for freqptr in self.freq_pointers:
-            freqptr.set(freq)
+        self.set_freq(freq)
 
         # self.all_freqs.add()
 
@@ -137,8 +136,7 @@ class MIDIKeyboard(Controller):
         for envelope in self.envelopes:
             envelope.toggle(on=True)
 
-        for toggle in self.toggle_pointers:
-            toggle.set(1)
+        self.toggle(on=True)
 
         if str(key)[1] in self.MIDICONTROLMAP:
             self.MIDICONTROLMAP[str(key)[1]](self)
@@ -152,8 +150,7 @@ class MIDIKeyboard(Controller):
         # self.send(0, self.map_key_to_midi(key))
         self.note_up(self.map_key_to_midi(key))
 
-        for toggle in self.toggle_pointers:
-            toggle.set(0)
+        self.toggle(on=False)
         
         for envelope in self.envelopes:
             envelope.toggle(on=False)
