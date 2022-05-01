@@ -5,10 +5,10 @@ from random import randint
 
 class Oscillator:
 
-    def __init__(self, audio=None, controller=None, volume=1, multiplier=1, offset=0, child_osc=[]):
+    def __init__(self, audio=None, controller=None, volume=1, multiplier=1, offset=0, child_osc=[], dependents = set()):
 
+        self.audio = audio
         if audio:
-            self.audio = audio
             audio.attach_voice(self)
 
         self.controller = controller
@@ -26,11 +26,28 @@ class Oscillator:
 
         self.last_sample = np.array([0])
 
+        self.dependents = dependents
+
+        self.launched_dependents = False
+
+    def _add_dependents_to_audio(self):
+        for attr in dir(self):
+            if not callable(getattr(self, attr)) and not attr.startswith("__"):
+                # print(getattr(self, attr), isinstance(getattr(self, attr), Oscillator))
+
+                if isinstance(getattr(self, attr), Oscillator):
+                    print("ADDING", attr)
+                    self.audio.add(getattr(self, attr))
+
     def __float__(self):
         # print('s', self.last_sample)
         return self.last_sample
 
     def next(self, buffer_size=None):
+
+        if not self.launched_dependents: 
+            self._add_dependents_to_audio()
+            self.launched_dependents = True
 
         self.current_index += 1
 
@@ -51,16 +68,16 @@ class Oscillator:
 
         if type(factor) in {int, float}: 
             # self.offset += factor
-            return Oscillator(audio=None, controller=None, offset=self.offset+factor, multiplier=self.multiplier, child_osc=[self])
+            return Oscillator(audio=self.audio, controller=self.controller, offset=self.offset+factor, multiplier=self.multiplier, child_osc=[self], dependents=self.dependents.union({self}))
 
-        return Oscillator(audio=None, controller=None, child_osc=[self, factor])
+        return Oscillator(audio=self.audio, controller=self.controller, child_osc=[self, factor], dependents=self.dependents.union({self, factor}))
 
     def __radd__(self, factor):
         return self.__add__(factor)
 
     def __mul__(self, factor):
         if type(factor) in {int, float}: 
-            return Oscillator(audio=None, controller=None, offset=self.offset, multiplier=self.multiplier*factor, child_osc=[self])
+            return Oscillator(audio=self.audio, controller=self.controller, offset=self.offset, multiplier=self.multiplier*factor, child_osc=[self], dependents=self.dependents.union({self}))
         
         # handle amplitude modulation in this way...
         raise NotImplementedError

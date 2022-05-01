@@ -9,16 +9,18 @@ import queue
 
 class AudioOutFile:
 
-    def __init__(self):
+    def __init__(self, name="performer_recording"):
 
         self.window_size = 200
         self.fs = 44100
-        self.downsample = 1#20
+        self.downsample = 1
+
+        self.name = name
 
         self.q = queue.Queue()
 
     def start(self, stream):
-        with sf.SoundFile("test.wav", mode='x', samplerate=44100,
+        with sf.SoundFile(self.name+".wav", mode='x', samplerate=self.fs,
                       channels=1, subtype='PCM_24') as file:
             while True:
                 file.write(self.q.get())

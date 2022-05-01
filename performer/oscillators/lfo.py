@@ -91,3 +91,6 @@ class LFO(Oscillator):
         # return self._apply_consts( self.f_op.generate(t = ( np.multiply(idxs, eff_f) + phase_match )/fs*self.fmul  ) )
 
         return self._apply_consts( self.f_op.generate(t = ( idxs + phase_match )*self.fmul, fs = fs  ) )
+
+
+OSC = LFO

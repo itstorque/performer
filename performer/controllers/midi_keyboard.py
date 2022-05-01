@@ -127,6 +127,8 @@ class MIDIKeyboard(Controller):
         if 'esc' in str(key): 
             return call(['killall Python'], shell=True) 
             # return sys.exit()
+        if 'ctrl' in str(key): 
+            return sys.exit()
         if '.' in str(key): return
         
         if key in self.keys_down: return

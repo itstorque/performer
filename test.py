@@ -11,15 +11,15 @@ controller = MIDIKeyboard(midiout=False)
 # print(sounddevice.query_devices())
 
 audio = AudioOut(fs=44100, 
-                    buffer_bit_size=8, 
+                    buffer_bit_size=6, 
                     channels=1, 
-                    volume=0.4, 
+                    volume=0.1, 
                     controller=controller, 
                     output_device=1,
                     latency=0.01,)
                     # scope=Scope(downsample=20)) # sounddevice.query_devices
 
-F = Param(300, 'freq')#300.
+F = Param(100, 'freq')#300.
 
 A = Param(1, 'amp')#1.
 
@@ -30,21 +30,24 @@ controller.attach_freq(F)
 
 controller.attach_toggle(A)
 
-# lfo_mod = 0.5*LFO(f=10)+0.5
-# lfo_mod = LFO(f=200)+200
-# lfo_mod.audio = audio
+# lfo_mod = LFO(f=1)
+lfo_mod = LFO(f=100)
 
+# lfo_mod.audio = audio
 # audio.add(lfo_mod)
 
-lfo1 = LFO(f=F, volume=A, type=Square(duty=A*0.5), fmul=1)
+print("LFO1")
+
+lfo1 = LFO(f=lfo_mod+100, volume=0.5, type=Sine, fmul=1)
+lfo1.audio = audio
 # lfo2 = LFO(f=F, fmul=0.66, volume=A) + LFO(None, f=F, fmul=0.33, envelope=None, volume=A)
 
 # lfo1.audio = None
 # lfo2.audio = None
 
-out = lfo1
+# out = lfo1
 
-# out = ADSR(lfo1 + lfo2, None)
+out = lfo1#Reverb(lfo1, audio=audio, delay=0.01, wet_to_dry_ratio=0.5)
 # controller.attach_envelope(out)
 
 audio.attach_voice(out)

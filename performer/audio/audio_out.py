@@ -12,13 +12,13 @@ from ..controllers.controller import Controller
 
 class AudioOut:
 
-    def __init__(self, fs, buffer_bit_size, 
+    def __init__(self, fs=44100, buffer_bit_size=8, 
                  channels=1, 
                  controller=None, 
                  width=2, 
-                 volume=0.1, 
+                 volume=1, 
                  output_device=0, 
-                 latency=None, 
+                 latency=0.01, 
                  scope=None):
         # TODO: look at device param
         # TODO: buffer_bit_size, width, volume
@@ -52,10 +52,12 @@ class AudioOut:
         return self.fs * self.buffer_size
 
     def add(self, osc):
+        osc.audio = self
         self.osc_nonvoice.add(osc)
 
     def attach_voice(self, voice):
         # voices are Generator objects or TODO: other forms of inputs such as mic
+        voice.audio = self
         self.voices.add(voice)
 
     def halt(self): self.stop()
