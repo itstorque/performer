@@ -15,7 +15,7 @@ audio = AudioOut(fs=44100,
                     channels=1, 
                     volume=0.1, 
                     controller=controller, 
-                    output_device=1,
+                    output_device=2,
                     latency=0.01,)
                     # scope=Scope(downsample=20)) # sounddevice.query_devices
 
@@ -38,7 +38,7 @@ lfo_mod = LFO(f=100)
 
 print("LFO1")
 
-lfo1 = LFO(f=lfo_mod+100, volume=0.5, type=Sine, fmul=1)
+lfo1 = LFO(f=F, volume=0.5, type=Sine, fmul=1)
 lfo1.audio = audio
 # lfo2 = LFO(f=F, fmul=0.66, volume=A) + LFO(None, f=F, fmul=0.33, envelope=None, volume=A)
 
