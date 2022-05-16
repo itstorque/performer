@@ -91,3 +91,49 @@ lfo3 = LFO(f=F, volume=A, type=Sin, fmul=0.33)
 audio.attach_voice(sum([lfo1, lfo2, lfo3]))
 audio.stream()
 ```
+
+
+### requirements
+
+- numpy
+- sounddevice
+- matplotlib
+- soundfile
+
+You also need to install `libsndfile` from a package manager like homebrew
+using a command similar to:
+
+```shell
+brew install python-soundfile
+```
+
+Note that if you face an error similar to this, then your soundfile install is weird.
+This workaround is M1 Macs.
+``` python
+Traceback (most recent call last):
+  File "/Users/torque/Library/Python/3.8/lib/python/site-packages/soundfile.py", line 142, in <module>
+    raise OSError('sndfile library not found')
+OSError: sndfile library not found
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/Users/torque/programs/performer/performer/__init__.py", line 13, in <module>
+    from .audio.audio_out_file import *
+  File "/Users/torque/programs/performer/performer/audio/audio_out_file.py", line 2, in <module>
+    import soundfile as sf
+  File "/Users/torque/Library/Python/3.8/lib/python/site-packages/soundfile.py", line 162, in <module>
+    _snd = _ffi.dlopen(_os.path.join(
+OSError: cannot load library '/Users/torque/Library/Python/3.8/lib/python/site-packages/_soundfile_data/libsndfile.dylib': dlopen(/Users/torque/Library/Python/3.8/lib/python/site-packages/_soundfile_data/libsndfile.dylib, 0x0002): tried: '/Users/torque/Library/Python/3.8/lib/python/site-packages/_soundfile_data/libsndfile.dylib' (no such file), '/usr/local/lib/libsndfile.dylib' (no such file), '/usr/lib/libsndfile.dylib' (no such file)
+```
+
+`libsndfile` won't work out of the box on M1 macs. To fix that, you need
+to add the homebrew path to your PATH. The below command has some security
+consequences, but is generally okay and should fix the problem
+```shell
+export DYLD_LIBRARY_PATH="/opt/homebrew/lib:$DYLD_LIBRARY_PATH"
+```
+
+The alternative would be to manually install the `libsndfile` library
+in the default `/usr/local/lib` homebrew used on intel macs.
