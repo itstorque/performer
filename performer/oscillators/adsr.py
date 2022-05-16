@@ -1,3 +1,4 @@
+from http.client import NotConnected
 import threading
 import numpy as np
 
@@ -5,12 +6,17 @@ from .oscillator import Oscillator
 
 class ADSR(Oscillator):
 
-    def __init__(self, input, audio=None, A=0.5, D=0.5, S=0.4, R=0.5, controller=None):
+    def __init__(self, input=None, audio=None, A=0.5, D=0.5, S=0.4, R=0.5, controller=None):
         from time import time
 
         super().__init__(audio, controller)
 
-        self.input = input
+        if input: 
+            self.input = input
+            self.init_input = True
+        else: 
+            self.init_input = False
+
         self.amp = 0
 
         self.rising_amp, self.falling_amp = self.amp, self.amp
@@ -32,6 +38,11 @@ class ADSR(Oscillator):
 
         self.on = on
         self.timer = time()
+
+        if self.init_input == False: 
+            print("Did not provide input to ADSR!")
+            # TODO: As of now, we raise an error, this shouldn't be blocking...
+            raise NotConnected
 
         self.adsr_thread = threading.Thread(target=self.calc_amp)
         self.adsr_thread.start()
